@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>PMD — Sua marca. Sua operação. Sua inteligência.</title>
+  <meta name="description" content="PMD une presença, produto e inteligência em um único ecossistema digital para dar mais autonomia ao seu negócio.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#05060a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232748c8'%3E%3Ccircle cx='12' cy='6' r='4.5'/%3E%3Ccircle cx='18' cy='12' r='4.5'/%3E%3Ccircle cx='12' cy='18' r='4.5'/%3E%3Ccircle cx='6' cy='12' r='4.5'/%3E%3Ccircle cx='12' cy='12' r='4.5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('motion');
+      setTimeout(() => window.__motionReady || document.documentElement.classList.remove('motion'), 3000);
+    }
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollSmoother.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+  <script defer src="motion.js"></script>
+  <script defer src="calculadora.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Pular para o conteúdo</a>
+
+  <!-- Provisional mark (the clover the 3D glass is built on) until PMD's own mark arrives as SVG. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <!-- The header's melt as it dissolves between sections: motion.js raises the displacement with the fade. -->
+    <filter id="liquid" x="-10%" y="-50%" width="120%" height="200%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.08" numOctaves="2" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <symbol id="mark" viewBox="0 0 24 24">
+      <g fill="currentColor">
+        <circle cx="12" cy="6" r="4.5"/><circle cx="18" cy="12" r="4.5"/><circle cx="12" cy="18" r="4.5"/><circle cx="6" cy="12" r="4.5"/><circle cx="12" cy="12" r="4.5"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="#top"><svg aria-hidden="true"><use href="#mark"/></svg>PMD</a>
+      <button class="menu-btn" type="button" popovertarget="site-menu" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <nav id="site-menu" popover aria-label="Principal">
+        <ul class="nav-list">
+          <li><a href="#solucao">Solução</a></li>
+          <li><a href="#retorno">Retorno</a></li>
+          <li><a href="#produto">Produto</a></li>
+          <li><a href="#integracoes">Integrações</a></li>
+          <li><a href="#precos">Preços</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="smooth-wrapper">
+  <div id="smooth-content">
+  <main id="main" tabindex="-1">
+    <!-- 01 · Hero -->
+    <section class="hero" id="top" aria-labelledby="hero-h">
+      <div class="hero-glow" aria-hidden="true"><div class="hero-glow-inner"></div></div>
+      <div class="wrap hero-grid">
+        <div>
+          <p class="badge" data-hero>3 camadas · 1 ecossistema</p>
+          <h1 id="hero-h" data-hero><span>Sua marca.</span> <span>Sua operação.</span> <span>Sua inteligência.</span></h1>
+          <p class="lead" data-hero>PMD une presença, produto e inteligência em um único ecossistema digital para dar mais autonomia ao seu negócio.</p>
+        </div>
+        <div class="hero-side">
+          <dl class="camadas" data-hero>
+            <div><dt>Presença</dt><dd>Marca e posicionamento.</dd></div>
+            <div><dt>Produto</dt><dd>Site e operação.</dd></div>
+            <div><dt>Inteligência</dt><dd>Para continuar criando e evoluindo.</dd></div>
+            <div class="soberania"><dt><span aria-hidden="true">↓ </span>Soberania digital</dt></div>
+          </dl>
+          <div class="cta-row" data-hero>
+            <a class="btn" href="#solucao">Conhecer o PMD</a>
+            <a class="btn btn-ghost" href="#precos">Ver preços</a>
+          </div>
+          <p class="micro" data-hero>Modular. Transparente. Sem reunião obrigatória. Sem orçamento escondido.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 · O problema -->
+    <section class="section about" id="problema" aria-labelledby="problema-h">
+      <div class="wrap">
+        <div class="about-grid">
+          <h2 id="problema-h">Seu negócio pode estar online e ainda não ser realmente seu.</h2>
+          <div class="about-copy">
+            <ul class="deps">
+              <li>Site de terceiro.</li>
+              <li>Pedidos em plataforma.</li>
+              <li>Conteúdo que depende de agência.</li>
+              <li>Atualizações que dependem de alguém.</li>
+              <li>Dados espalhados em vários lugares.</li>
+            </ul>
+            <p>O problema não é usar ferramentas externas.<br>O problema é precisar delas para existir.</p>
+          </div>
+          <div class="about-glass" aria-hidden="true"></div>
+        </div>
+        <div class="compare">
+          <div class="compare-col">
+            <h3>Hoje</h3>
+            <ul class="hoje">
+              <li><span>Marca</span><i aria-hidden="true"></i><span><span class="sr">depende de </span>Agência</span></li>
+              <li><span>Pedidos</span><i aria-hidden="true"></i><span><span class="sr">dependem de </span>Plataforma</span></li>
+              <li><span>Pagamento</span><i aria-hidden="true"></i><span><span class="sr">depende de </span>Intermediário</span></li>
+              <li><span>Conteúdo</span><i aria-hidden="true"></i><span><span class="sr">depende de </span>Terceiro</span></li>
+              <li><span>Dados</span><i aria-hidden="true"></i><span><span class="sr">ficam em </span>Vários lugares</span></li>
+            </ul>
+          </div>
+          <div class="compare-col compare-pmd">
+            <h3>Com o PMD</h3>
+            <p class="tree-root">Sua marca</p>
+            <ul class="tree">
+              <li style="--hue:#2748c8">Presença</li>
+              <li style="--hue:#1f9d8b">Produto</li>
+              <li style="--hue:#6d4ae6">Inteligência</li>
+            </ul>
+          </div>
+        </div>
+        <p class="closing">As ferramentas podem ser de terceiros. <span>O centro da operação não precisa ser.</span></p>
+      </div>
+    </section>
+
+    <!-- 03 · A solução -->
+    <section class="section services" id="solucao" aria-labelledby="solucao-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="solucao-h">Três frentes. Contrate apenas o que precisa.</h2>
+        </div>
+        <ul class="cards">
+          <li class="card">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h3>Presença</h3>
+            <p class="tagline">Para ser percebido.</p>
+            <p>Identidade, posicionamento, site, redes sociais e materiais que dão consistência à sua marca.</p>
+          </li>
+          <li class="card">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+            <h3>Produto</h3>
+            <p class="tagline">Para funcionar.</p>
+            <p>Catálogo, pedidos, estoque, pagamentos, acompanhamento, comunicação e painel operacional.</p>
+          </li>
+          <li class="card">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.6 4.6 3.4 7.4 8 8-4.6.6-7.4 3.4-8 8-.6-4.6-3.4-7.4-8-8 4.6-.6 7.4-3.4 8-8z"/></svg></span>
+            <h3>Inteligência</h3>
+            <p class="tagline">Para continuar evoluindo.</p>
+            <p>Uma inteligência preparada a partir da sua marca e do seu negócio para ajudar você a criar, organizar e operar com mais autonomia.</p>
+          </li>
+        </ul>
+        <div class="solucao-close">
+          <p class="statement"><span>Separadas, resolvem problemas.</span> <span>Juntas, constroem um ecossistema.</span></p>
+          <p>Você não precisa contratar tudo. Começamos pela sua dor — não por um pacote fechado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 · Retorno financeiro. Without JS the example is already worked out in the markup. -->
+    <section class="section retorno" id="retorno" aria-labelledby="retorno-h">
+      <div class="wrap">
+        <div class="retorno-grid">
+          <div class="retorno-copy">
+            <h2 id="retorno-h">Chega de pagar pelo que é seu.</h2>
+            <ul class="owned">
+              <li>Seu produto é seu.</li>
+              <li>Seu cliente é seu.</li>
+              <li>Sua marca é sua.</li>
+            </ul>
+            <p>Mas taxas, comissões e intermediações podem consumir margem todos os meses apenas para manter a relação entre você e quem compra.</p>
+            <p class="retorno-key">Use o intermediário como canal. Não como dono da relação.</p>
+            <p class="statement"><span>Menos intermediação.</span> <span>Mais margem.</span> <span>Mais autonomia.</span></p>
+          </div>
+
+          <form class="calc" id="calc" novalidate aria-labelledby="calc-h">
+            <h3 id="calc-h">Quanto da sua operação está ficando no caminho?</h3>
+            <div class="fields">
+              <div class="field">
+                <label for="fat">Faturamento mensal intermediado</label>
+                <div class="input"><span class="unit" aria-hidden="true">R$</span><input id="fat" name="fat" inputmode="decimal" autocomplete="off" spellcheck="false" value="50.000" aria-describedby="fat-hint"></div>
+                <p class="hint" id="fat-hint">Em reais, por mês. Ex.: 50.000</p>
+              </div>
+              <div class="field">
+                <label for="taxa">Taxa média</label>
+                <div class="input"><input id="taxa" name="taxa" inputmode="decimal" autocomplete="off" spellcheck="false" value="12" aria-describedby="taxa-hint"><span class="unit" aria-hidden="true">%</span></div>
+                <p class="hint" id="taxa-hint">Comissões e taxas somadas. Ex.: 12 ou 12,5</p>
+              </div>
+            </div>
+            <button class="btn" type="submit">Calcular impacto</button>
+            <dl class="calc-out" id="calc-out">
+              <div><dt>Custo mensal</dt><dd id="mes">R$ 6.000</dd></div>
+              <div class="anual"><dt>Custo anual</dt><dd id="ano">R$ 72.000</dd></div>
+            </dl>
+            <p class="sr" id="calc-live" aria-live="polite" aria-atomic="true"></p>
+            <p class="calc-note">Uma taxa pode parecer pequena isoladamente. Repetida em cada pedido, todos os meses, ela disputa espaço com sua margem, estoque, equipe e crescimento.</p>
+            <p class="calc-note"><span class="ph-tag">placeholder</span> Valores de exemplo já preenchidos</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · Prova de produto. The real PMD mockups go in place of the placeholders. -->
+    <section class="section produto" id="produto" aria-labelledby="produto-h">
+      <div class="wrap produto-grid">
+        <div class="produto-copy">
+          <h2 id="produto-h">Não entregamos apenas um site.</h2>
+          <p>O site é a camada visível. Por trás dele pode existir catálogo, pedidos, estoque, pagamentos, tracking, comunicação, notificações e integrações.</p>
+          <p class="head-strong">A vitrine e a operação fazem parte do mesmo projeto.</p>
+          <div class="bolso">
+            <p class="eyebrow">Admin no bolso</p>
+            <h3>Seu negócio no seu bolso.</h3>
+            <p>Cadastre produtos, tire fotos, altere preços, atualize estoque, receba pedidos e converse com clientes pelo celular.</p>
+            <ol class="trilha" aria-label="Do celular à vitrine">
+              <li><span>Foto</span></li>
+              <li><span>Produto</span></li>
+              <li><span>Preço</span></li>
+              <li><span>Estoque</span></li>
+              <li><span>Publicar</span></li>
+            </ol>
+            <p class="bolso-tag">Tecnologia escondida. Operação visível.</p>
+          </div>
+        </div>
+        <ul class="mockups">
+          <li class="mock-web">
+            <figure>
+              <div class="frame-web" role="img" aria-label="Placeholder: mockup do storefront do PMD">
+                <div class="ph-screen"><span class="ph-tag">placeholder</span><strong>Storefront</strong><span>mockup real do PMD · 16:10</span></div>
+              </div>
+              <figcaption>Storefront</figcaption>
+            </figure>
+          </li>
+          <li class="mock-phone">
+            <figure>
+              <div class="frame-phone" role="img" aria-label="Placeholder: mockup do admin mobile do PMD">
+                <div class="ph-screen"><span class="ph-tag">placeholder</span><strong>Admin mobile</strong><span>foto → publicar</span></div>
+              </div>
+              <figcaption>Admin mobile</figcaption>
+            </figure>
+          </li>
+          <li class="mock-phone">
+            <figure>
+              <div class="frame-phone" role="img" aria-label="Placeholder: mockup do tracking de pedidos do PMD">
+                <div class="ph-screen"><span class="ph-tag">placeholder</span><strong>Tracking</strong><span>acompanhamento do pedido</span></div>
+              </div>
+              <figcaption>Tracking</figcaption>
+            </figure>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 06 · Ecossistema e integrações. The 3D glass is "PMD at the centre": each category is a station it turns to. -->
+    <section class="section industries" id="integracoes" aria-labelledby="integ-h">
+      <div class="industries-glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="integ-h">Funciona sozinho. Fica mais poderoso conectado.</h2>
+          <p>O núcleo do PMD não depende das integrações para operar. Quando fazem sentido, conectamos as ferramentas que já fazem parte da sua rotina:</p>
+        </div>
+        <div class="integ-stage">
+          <div class="integ-glass" aria-hidden="true"></div>
+          <ul class="industry-list">
+            <li class="is-featured">Pagamentos</li>
+            <li>Comunicação</li>
+            <li>Google</li>
+            <li>ERP</li>
+            <li>Marketplaces</li>
+            <li>Logística</li>
+            <li>Agenda</li>
+            <li>CRM</li>
+            <li>Analytics</li>
+          </ul>
+          <div class="integ-close">
+            <h3>Uma operação. Várias soluções conectadas.</h3>
+            <p>Pedidos, pagamentos, mensagens, agenda, estoque e pendências podem ser reunidos em uma única superfície.</p>
+            <p>Você continua usando ferramentas especializadas. O PMD organiza o contexto.</p>
+          </div>
+        </div>
+        <p class="industry-count" aria-hidden="true"><span>01</span> / 09</p>
+      </div>
+    </section>
+
+    <!-- 07 · Contratação e preço. The native accordion is the price list: the price always shows, deliverables open. -->
+    <section class="section faq precos" id="precos" aria-labelledby="precos-h">
+      <div class="wrap faq-grid">
+        <div>
+          <h2 id="precos-h">Saiba o que está comprando antes de comprar.</h2>
+          <ul class="sem">
+            <li>Sem reunião obrigatória.</li>
+            <li>Sem orçamento misterioso.</li>
+            <li>Sem pressão comercial.</li>
+          </ul>
+          <h3 class="mini-h">Como contratar</h3>
+          <ol class="passos">
+            <li><span class="n" aria-hidden="true">01</span><div><strong>Escolha</strong><p>Presença, Produto, Inteligência — ou uma combinação.</p></div></li>
+            <li><span class="n" aria-hidden="true">02</span><div><strong>Veja o preço</strong><p>Valores e entregáveis disponíveis antes da contratação.</p></div></li>
+            <li><span class="n" aria-hidden="true">03</span><div><strong>Envie seu contexto</strong><p>Coletamos as informações necessárias de forma estruturada.</p></div></li>
+            <li><span class="n" aria-hidden="true">04</span><div><strong>Veja uma direção inicial</strong><p>Você recebe uma proposta visual para entender o caminho.</p></div></li>
+            <li><span class="n" aria-hidden="true">05</span><div><strong>Decida</strong><p>Se não fizer sentido, você não precisa avançar.</p></div></li>
+          </ol>
+        </div>
+        <div>
+          <h3 class="mini-h mini-h-top">Preços</h3>
+          <div class="faq-list precos-list">
+            <details name="precos" open>
+              <summary><span>Presença</span><span class="preco">A partir de R$ X</span></summary>
+              <p><span class="ph-tag">placeholder</span> Entregáveis de Presença: lista a definir pelo PMD (o que entra, prazo, revisões).</p>
+            </details>
+            <details name="precos">
+              <summary><span>Produto</span><span class="preco">A partir de R$ X</span></summary>
+              <p><span class="ph-tag">placeholder</span> Entregáveis de Produto: lista a definir pelo PMD.</p>
+            </details>
+            <details name="precos">
+              <summary><span>Inteligência</span><span class="preco">A partir de R$ X</span></summary>
+              <p><span class="ph-tag">placeholder</span> Entregáveis de Inteligência: lista a definir pelo PMD.</p>
+            </details>
+            <details name="precos" class="eco">
+              <summary><span>Ecossistema PMD</span><span class="preco">A partir de R$ X</span></summary>
+              <p><span class="ph-tag">placeholder</span> Entregáveis do Ecossistema PMD: lista a definir pelo PMD.</p>
+            </details>
+          </div>
+          <div class="depois">
+            <h3>Depois da entrega</h3>
+            <p class="depois-key">Sem mensalidade obrigatória. Sem carência.</p>
+            <p>Se quiser continuar evoluindo, contrate apenas quando precisar:</p>
+            <ul class="tags">
+              <li>Acompanhamento estratégico</li>
+              <li>Manutenção</li>
+              <li>Atualizações</li>
+              <li>Integrações</li>
+              <li>Novas implementações</li>
+              <li>Horas técnicas</li>
+            </ul>
+            <p class="depois-key">Tudo sob demanda. Tudo tabelado previamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 08 · Footer / CTA -->
+  <footer class="site-footer" id="contato">
+    <div class="wrap">
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2>O que hoje ainda depende demais de terceiros no seu negócio?</h2>
+          <ul class="talvez">
+            <li>Talvez seja sua marca.</li>
+            <li>Talvez seja sua operação.</li>
+            <li>Talvez seja sua margem.</li>
+            <li>Talvez seja sua capacidade de continuar criando.</li>
+          </ul>
+          <p class="footer-lead">O PMD pode começar exatamente aí.</p>
+          <div class="cta-row">
+            <a class="btn" href="#contato">Encontrar meu PMD</a>
+            <a class="btn btn-ghost" href="#precos">Ver preços</a>
+          </div>
+          <p class="calc-note"><span class="ph-tag">placeholder</span> destino do "Encontrar meu PMD" a definir</p>
+        </div>
+        <nav class="footer-cols" aria-label="Rodapé">
+          <div>
+            <h3>Frentes</h3>
+            <ul>
+              <li><a href="#solucao">Presença</a></li>
+              <li><a href="#solucao">Produto</a></li>
+              <li><a href="#solucao">Inteligência</a></li>
+              <li><a href="#precos">Ecossistema PMD</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Página</h3>
+            <ul>
+              <li><a href="#problema">O problema</a></li>
+              <li><a href="#retorno">Retorno</a></li>
+              <li><a href="#produto">Produto</a></li>
+              <li><a href="#integracoes">Integrações</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Contato <span class="ph-tag">placeholder</span></h3>
+            <ul>
+              <li><a href="#">WhatsApp</a></li>
+              <li><a href="#">E-mail</a></li>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">LinkedIn</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <ul class="assinatura">
+        <li style="--hue:#4a7dff"><strong>Presença</strong> para ser percebido.</li>
+        <li style="--hue:#3cc4ae"><strong>Produto</strong> para funcionar.</li>
+        <li style="--hue:#9b7dff"><strong>Inteligência</strong> para evoluir.</li>
+      </ul>
+      <div class="footer-bar">
+        <p>© 2026 PMD · Mais controle sobre sua presença, sua operação e sua evolução digital.</p>
+        <nav aria-label="Legal"><a href="#">Política de privacidade</a><a href="#">Termos de uso</a></nav>
+      </div>
+    </div>
+    <p class="wordmark" aria-hidden="true"><svg><use href="#mark"/></svg><span class="wordmark-text">PMD</span></p>
+  </footer>
+  </div>
+  </div>
+
+  <script>
+    const menu = document.getElementById('site-menu');
+    menu.addEventListener('click', e => {
+      if (e.target.closest('a') && menu.matches(':popover-open')) menu.hidePopover();
+    });
+  </script>
+</body>
+</html>
