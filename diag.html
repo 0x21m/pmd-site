@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Diagnóstico de tela — PMD</title>
+  <style>
+    :root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); }
+    * { box-sizing: border-box; margin: 0; }
+    body { font: 15px/1.5 system-ui, sans-serif; background: #0a0b0f; color: #fff; padding: calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom)); }
+    h1 { font-size: 17px; margin-bottom: 8px; }
+    p.hint { color: #9aa0ad; font-size: 13px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    td { padding: 5px 0; border-bottom: 1px solid #1e2129; }
+    td:last-child { text-align: right; font-weight: 600; }
+    .ua { word-break: break-all; font-size: 12px; color: #9aa0ad; margin-top: 10px; }
+    button { width: 100%; min-height: 48px; margin-top: 14px; border: 0; border-radius: 10px; background: #2748c8; color: #fff; font: inherit; font-weight: 600; }
+    /* Three boxes as tall as each unit claims: what is cut is what the browser's bars cover. */
+    .probes { display: flex; gap: 8px; margin-top: 16px; }
+    .probe { flex: 1; border-radius: 8px; padding: 6px; font-size: 12px; text-align: center; }
+    .svh { height: 100svh; background: linear-gradient(#1f9d8b, #0d4e45); }
+    .lvh { height: 100lvh; background: linear-gradient(#2748c8, #101d52); }
+    .dvh { height: 100dvh; background: linear-gradient(#6d4ae6, #2c1d5e); }
+    .foot { margin-top: 8px; font-size: 12px; color: #9aa0ad; }
+    .edge { position: absolute; left: 0; right: 0; height: 3px; background: #ff5a5a; }
+  </style>
+</head>
+<body>
+  <h1>Diagnóstico de tela</h1>
+  <p class="hint">Role até o fim, depois toque em “Copiar tudo” e cole na conversa. A faixa vermelha marca o fim de cada caixa: o que estiver escondido atrás da barra do navegador é o que a página está perdendo.</p>
+  <table id="t"></table>
+  <p class="ua" id="ua"></p>
+  <button id="copy" type="button">Copiar tudo</button>
+  <div class="probes">
+    <div class="probe svh">100svh</div>
+    <div class="probe lvh">100lvh</div>
+    <div class="probe dvh">100dvh</div>
+  </div>
+  <p class="foot">Se as três caixas terminarem no mesmo ponto, o navegador não está avisando a página sobre a barra dele.</p>
+  <script>
+    const px = el => el.getBoundingClientRect().height.toFixed(1);
+    const seen = { min: Infinity, max: 0 };
+    const read = () => {
+      const vv = window.visualViewport;
+      seen.min = Math.min(seen.min, innerHeight);
+      seen.max = Math.max(seen.max, innerHeight);
+      const probe = document.querySelector('.svh'), probeL = document.querySelector('.lvh'), probeD = document.querySelector('.dvh');
+      const style = getComputedStyle(document.documentElement);
+      return {
+        'innerHeight': innerHeight,
+        'innerHeight mín / máx vistos': `${seen.min} / ${seen.max}`,
+        'visualViewport.height': vv ? vv.height.toFixed(1) : '—',
+        'documentElement.clientHeight': document.documentElement.clientHeight,
+        '100svh': px(probe),
+        '100lvh': px(probeL),
+        '100dvh': px(probeD),
+        'safe-area top / bottom': `${style.getPropertyValue('--safe-top').trim()} / ${style.getPropertyValue('--safe-bottom').trim()}`,
+        'largura (innerWidth)': innerWidth,
+        'proporção da tela': (innerHeight / innerWidth).toFixed(3),
+        'devicePixelRatio': devicePixelRatio,
+        'screen': `${screen.width} × ${screen.height}`,
+      };
+    };
+    const render = () => {
+      const data = read();
+      document.getElementById('t').innerHTML = Object.entries(data).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+      document.getElementById('ua').textContent = navigator.userAgent;
+      window.__data = data;
+    };
+    render();
+    addEventListener('resize', render);
+    addEventListener('scroll', render, { passive: true });
+    visualViewport?.addEventListener('resize', render);
+    document.getElementById('copy').addEventListener('click', async () => {
+      const text = Object.entries(window.__data).map(([k, v]) => `${k}: ${v}`).join('\n') + '\n' + navigator.userAgent;
+      try { await navigator.clipboard.writeText(text); document.getElementById('copy').textContent = 'copiado ✓'; }
+      catch { document.getElementById('copy').textContent = 'não deu: tire um print'; }
+    });
+  </script>
+</body>
+</html>
