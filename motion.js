@@ -29,6 +29,11 @@
   // styles.css's layout queries: a frame (one screen per section, stacked) and the narrow composition.
   const FIT = '(orientation: landscape) and (min-width: 900px) and (min-height: 540px), (orientation: portrait) and (min-height: 540px)';
   const NARROW = '(orientation: portrait), (max-width: 899px), (max-height: 539px)';
+  // What the page shows, by address (2026-09-19). The 3D glass and the light it carries are off while the person
+  // looks at the site without them; nothing was removed, only left unasked for.
+  //   ?vidro  brings the 3D world back (hero, the sheet's light and the centre of the orbit)
+  //   ?lista  brings the nine categories back as a list, instead of the orbit
+  const FLAGS = new URLSearchParams(location.search);
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
@@ -59,7 +64,7 @@
     const restoreHeader = headerBehaviour(on, stage, fit);
     heroIntro(full, on);
     if (fit) stackScene(stage);
-    const restoreWorld = worldScene(full, on, stage, fit);
+    const restoreWorld = FLAGS.has('vidro') ? worldScene(full, on, stage, fit) : () => {};
     reveals(on);
     wordmarkScene();
     anchors(smoother, on);
@@ -186,7 +191,7 @@
       li.replaceChildren(b);
       return b;
     });
-    const orbit = new URLSearchParams(location.search).has('orbita');
+    const orbit = !FLAGS.has('lista');
     if (orbit) {
       root.classList.add('orbit-on');
       orbitScene(section, items, buttons, hues);
@@ -335,13 +340,19 @@
       stage.recede[under.id] = 0;
       const tl = gsap.timeline({
         defaults: { ease: 'none', duration: 1 },
-        scrollTrigger: { trigger: under, start: 'clamp(bottom bottom)', end: 'bottom top', pin: true, pinSpacing: false, scrub: true },
+        scrollTrigger: {
+          trigger: under, start: 'clamp(bottom bottom)', end: 'bottom top', pin: true, pinSpacing: false, scrub: true,
+          // The blur is only alive during the passage: a full-screen backdrop filter is too expensive to leave on.
+          onToggle: self => sheet.classList.toggle('is-glass', self.isActive),
+        },
       })
         .to(hero ? $('.hero-grid', under) : $(':scope > .wrap', under), { scale: .9, opacity: .5, transformOrigin: '50% 70%' }, 0)
         .to(under, { '--dim': .55 }, 0)
         .to(stage.recede, { [under.id]: 1 }, 0)
         .fromTo(sheet, { '--lift': 0 }, { '--lift': 1, duration: .15 }, 0)
-        .fromTo(sheet, { '--sheet-r': '28px' }, { '--sheet-r': '0px', duration: .15 }, .85);
+        .fromTo(sheet, { '--sheet-r': '28px' }, { '--sheet-r': '0px', duration: .15 }, .85)
+        // Glass on the way up, solid by the time it lands.
+        .fromTo(sheet, { '--glass': 1 }, { '--glass': 0, duration: .3 }, .62);
       if (hero) tl.to($('.hero-glow', under), { scale: .92 }, 0);
       stage.stack.push(tl.scrollTrigger);
     });
@@ -610,7 +621,6 @@
     const sectors = $('.industries');
     const glow = $('.hero-glow', hero);
     const glowInner = $('.hero-glow-inner', hero);
-    const params = new URLSearchParams(location.search);
     const canvas = document.createElement('canvas');
     canvas.id = 'world';
     canvas.setAttribute('aria-hidden', 'true');
@@ -890,7 +900,7 @@
         root.classList.add('world-on');
         gsap.to(appear, { v: 1, duration: 2.4, ease: 'expo.out' });
         guardFrom = gsap.ticker.time + 2;
-        if (params.has('dev')) devPanel(w, look);
+        if (FLAGS.has('dev')) devPanel(w, look);
       })
       // Offline, opened from file://, or a failed compile: the CSS glow stays, and the world stays off.
       .catch(() => {

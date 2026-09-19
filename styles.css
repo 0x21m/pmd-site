@@ -154,14 +154,27 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
    it — rounded top corners that flatten as it lands, a shadow that appears as it lifts (--sheet-r, --lift). One
    screen tall, so once risen it covers the screen and the section below never shows past it. The section below
    recedes and dims (--dim); motion.js drives all three. */
-.about, .services, .produto, .precos { background: var(--paper); }
+.about, .services, .produto, .precos { --sheet: var(--paper); background: var(--sheet); }
+.retorno, .industries { --sheet: var(--night); }
+.site-footer { --sheet: #07080b; }
 @property --lift { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --glass { syntax: "<number>"; inherits: false; initial-value: 0; }
 @property --sheet-r { syntax: "<length>"; inherits: false; initial-value: 28px; }
 @media (orientation: landscape) and (min-width: 900px) and (min-height: 540px), (orientation: portrait) and (min-height: 540px) {
   .motion :is(.about, .services, .retorno, .produto, .industries, .precos, .site-footer) {
     position: relative;
     border-radius: var(--sheet-r, 28px) var(--sheet-r, 28px) 0 0;
     box-shadow: 0 -24px 60px -12px rgb(0 0 0 / calc(var(--lift, 0) * .5));
+    /* Glass while it rises (--glass, 1 → 0 in motion.js): the leading edge lets the section below through, blurred,
+       and the sheet turns solid by the time it lands. The blur itself is only switched on for that passage
+       (.is-glass), because a full-screen backdrop filter is expensive to keep around. */
+    background-image: linear-gradient(to bottom,
+      color-mix(in srgb, var(--sheet) calc(100% - 48% * var(--glass, 0)), transparent) 0,
+      var(--sheet) calc(16rem * var(--glass, 0)));
+  }
+  .motion .is-glass {
+    -webkit-backdrop-filter: blur(calc(22px * var(--glass, 0))) saturate(calc(1 + .4 * var(--glass, 0)));
+    backdrop-filter: blur(calc(22px * var(--glass, 0))) saturate(calc(1 + .4 * var(--glass, 0)));
   }
   .motion .about { z-index: 2; }
   .motion .services { z-index: 3; }
@@ -241,13 +254,13 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
 /* 02 · O problema */
 /* The title with its description under it on the left; on the right, the free column the 3D glass lands in
    (motion.js measures it; empty without the 3D world). */
-.about-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.5rem 4rem; align-items: start; }
-.about h2, .about-copy { grid-column: 1; }
-.about-glass { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; }
+/* The problem, centred: the title, then the dependencies in two columns, then the line that names the problem. */
+.about-grid { display: grid; gap: 1.25rem; justify-items: center; text-align: center; }
+.about-glass { display: none; }  /* where the glass used to land, with the 3D on */
 .about h2, .section-head h2, .precos h2 { font-size: 2.5rem; }
-.about h2 { max-width: 20ch; }
-.deps { display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; justify-content: start; column-gap: 2.5rem; color: var(--text); font-size: 1.05rem; line-height: 1.6; }
-.about-copy p { max-width: 52ch; margin-top: 1.25rem; color: var(--muted); }
+.about h2 { max-width: 24ch; }
+.deps { display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; justify-content: center; column-gap: 3rem; color: var(--text); font-size: 1.05rem; line-height: 1.6; text-align: left; }
+.about-copy p { max-width: 52ch; margin: 1.25rem auto 0; color: var(--muted); }
 .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2.5rem; }
 .compare-col { padding: 1.5rem 1.75rem; border-radius: var(--radius); background: var(--card); }
 .compare-col h3 { color: var(--muted); font-size: .72rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
@@ -410,6 +423,7 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
 .industries .section-head p { color: var(--night-muted); }
 /* The glass (PMD at the centre of the operation) on the left, the categories in the middle; the right column is
    empty, so the list stays centred under the heading. motion.js places the glass in the empty left column. */
+
 .integ-stage { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2rem; }
 .integ-glass { align-self: stretch; }
 .industries .wrap { position: relative; }  /* the marker is placed inside it, and recedes with the list */
