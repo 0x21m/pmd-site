@@ -99,25 +99,38 @@
     'M5 19V11M10 19V5M15 19v-6M20 19V9',
   ];
 
-  // The categories orbiting the glass, on three rings (a test behind ?orbita). Each category keeps its place in the
-  // list and in the tab order; only its look and position change. The chip turns against its arm, so the icon and the
-  // name stay upright, and the name shows on the active one, on hover and on focus.
+  // The categories orbiting the glass, on three rings cut in half by the section's base (a test behind ?orbita).
+  // Each category keeps its place in the list and in the tab order; only its look and position change. Its arm turns
+  // around the centre on that bottom edge, where the glass rises, and its chip turns the other way, so the icon and
+  // the name stay upright. Half of every orbit is below the edge, where the section's own overflow hides it: the
+  // categories sail out of the screen and back in. The name shows on the active one, on hover and on focus.
   function orbitScene(section, items, buttons, hues) {
     const list = $('.industry-list', section);
-    const rings = [[.24, 26, 1], [.36, 34, -1], [.48, 42, 1]];  // radius (of the box), seconds, direction: the gaps
-    //                                                            between rings are wider than a chip, so passes do not overlap
-    const box = () => list.getBoundingClientRect().width;
-    rings.forEach(([r], k) => {
+    // ring: share of the outer radius, seconds per turn, direction. The gaps are wider than a chip, so passes do not
+    // overlap; the rings turn at different speeds and sides, so the nine never line up for long.
+    const rings = [[.56, 26, 1], [.78, 34, -1], [1, 42, 1]];
+    rings.forEach(() => {
       const ring = document.createElement('div');
       ring.className = 'anel';
       ring.setAttribute('aria-hidden', 'true');
-      ring.style.cssText = `width: ${r * 200}%; height: ${r * 200}%`;
       list.prepend(ring);
     });
+    const ringEls = $$('.anel', list);
+    // The outer ring reaches as far as the section leaves it: never wider than half the column, never taller than the
+    // room under the heading.
+    let outer = 0;
+    const place = () => {
+      const r = list.getBoundingClientRect();
+      // The wider the rings, the less of them is on screen and the fewer chips are in sight at once: on a phone
+      // they stay inside the column, wide enough to keep two or three chips up at any moment.
+      outer = Math.min(r.width * (matchMedia(NARROW).matches ? .62 : .46), r.height * .96);
+      list.dataset.outer = outer;  // read by the world: the glass rises from the centre, sized by the inner ring
+      ringEls.forEach((el, k) => { el.style.width = el.style.height = 2 * outer * rings[k][0] + 'px'; });
+      items.forEach((li, i) => li.style.setProperty('--r', outer * rings[i % 3][0] + 'px'));
+    };
     items.forEach((li, i) => {
       // Three per ring, 120° apart; each ring starts 40° further round, so chips of neighbouring rings never meet.
-      const [r, dur, turn] = rings[i % 3], a = (Math.floor(i / 3) * 120 + (i % 3) * 40) % 360;
-      li.style.setProperty('--r', r * 100 + '%');
+      const [, dur, turn] = rings[i % 3], a = (Math.floor(i / 3) * 120 + (i % 3) * 40) % 360;
       li.style.setProperty('--dur', dur + 's');
       li.style.setProperty('--a', a + 'deg');
       li.style.setProperty('--turn', turn);
@@ -136,7 +149,9 @@
       nome.textContent = items[i].dataset.nome;
       b.append(tile, nome);
     });
-    return () => box();
+    place();
+    addEventListener('resize', place);
+    ScrollTrigger.addEventListener('refresh', place);
   }
 
   function industriesScene(on, stage) {
@@ -176,12 +191,14 @@
       root.classList.add('orbit-on');
       orbitScene(section, items, buttons, hues);
     }
+    // With the rings at the base, the light radiates from that same point, in the active category's colour.
+    const spotAt = i => (orbit ? ['50%', '100%'] : [spots[i][0] + '%', spots[i][1] + '%']);
 
     if (!orbit) {
       gsap.set(items, { color: DIM, scale: 1 });
       gsap.set(items[0], { color: '#fff', scale: 1.06 });
     }
-    gsap.set(glow, { '--c': hues[0], '--x': spots[0][0] + '%', '--y': spots[0][1] + '%' });
+    gsap.set(glow, { '--c': hues[0], '--x': spotAt(0)[0], '--y': spotAt(0)[1] });
 
     // A luminous marker under the active sector, driven by the same playhead as the text and glow,
     // so it travels through every sector in between. Slots are measured from layout (offsets ignore the
@@ -217,7 +234,7 @@
         tl.to(items[i - 1], { color: DIM, scale: 1 }, i - 1)
           .to(items[i], { color: '#fff', scale: 1.06 }, i - 1);
       }
-      tl.to(glow, { '--c': hues[i], '--x': spots[i][0] + '%', '--y': spots[i][1] + '%' }, i - 1);
+      tl.to(glow, { '--c': hues[i], '--x': spotAt(i)[0], '--y': spotAt(i)[1] }, i - 1);
     }
     mark(0);
     measure();
@@ -642,9 +659,10 @@
       const head = inBox($('.section-head', sectors), sectors);
       const origin = [wrap.x + wrap.w * .5, wrap.y + wrap.h * .7];  // where the list recedes to (stackScene)
       if (root.classList.contains('orbit-on')) {
-        // The rings turn around the glass: it stands at their centre, as wide as the innermost ring leaves it.
+        // The rings are cut in half by the section's base: their centre is on that edge, and the glass rises there.
         const ring = inBox($('.industry-list', sectors), sectors);
-        station = { x: ring.x + ring.w / 2, y: ring.y + ring.h / 2, size: ring.w * .28, band: [-1e5, 1e5], origin };
+        const outer = +$('.industry-list', sectors).dataset.outer || ring.w * .46;
+        station = { x: ring.x + ring.w / 2, y: ring.y + ring.h, size: outer * .56 * 1.1, band: [-1e5, 1e5], origin };
       } else if (narrow.matches) {
         const top = parseFloat(getComputedStyle(root).fontSize) * 5.5;  // below the header
         station = { x: sectors.offsetWidth / 2, y: (top + head.y) / 2, size: Math.max(0, Math.min((head.y - top) * .85, sectors.offsetWidth * .4)), band: [-1e5, head.y], origin };
@@ -801,7 +819,9 @@
       return {
         ...w, host: sectors, region: 1, halo: look.halo * .8 * a, haloBand: station.band, station: s,
         // The light pools around the glass and stops short of the text (C-7 measures it).
-        spot: [x / w.width, y / w.height], spotSize: narrow.matches ? [.62, .3] : [.3, .4], spotColor: color.slice(0, 3).map(c => c / 255),
+        spot: [x / w.width, y / w.height],
+        spotSize: root.classList.contains('orbit-on') ? [.85, .62] : narrow.matches ? [.62, .3] : [.3, .4],
+        spotColor: color.slice(0, 3).map(c => c / 255),
         mark: {
           x, y, size: station.size * k * (.8 + .2 * a), hidden: debug.hide,
           rx: Math.sin(t * .27) * .08 + r * .5, ry: Math.sin(t * .35) * .14 - (1 - a) * 1.6, rz: Math.sin(t * .21) * .04,
