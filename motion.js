@@ -86,6 +86,59 @@
   // The section scrolls normally; a click moves the scene in place. Text, glow colour and glow position
   // live on one paused timeline (one unit per sector), and a click tweens its playhead to the chosen sector,
   // passing through every sector in between so each colour change is seen.
+  // A glyph of our own for each category: the real brands would need their own files and permission to use.
+  const GLYPHS = [
+    'M3 8h18M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM7 14h4',
+    'M21 12a8 8 0 0 1-8 8H4l2.5-3A8 8 0 1 1 21 12z',
+    'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM16 16l5 5',
+    'M4 7h16M4 12h16M4 17h16M8 4v16',
+    'M4 8h16l-1.5 11H5.5zM9 8V6a3 3 0 0 1 6 0v2',
+    'M3 8h11v9H3zM14 11h4l3 3v3h-7zM7 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM18 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
+    'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4',
+    'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 8h4M19 6v4',
+    'M5 19V11M10 19V5M15 19v-6M20 19V9',
+  ];
+
+  // The categories orbiting the glass, on three rings (a test behind ?orbita). Each category keeps its place in the
+  // list and in the tab order; only its look and position change. The chip turns against its arm, so the icon and the
+  // name stay upright, and the name shows on the active one, on hover and on focus.
+  function orbitScene(section, items, buttons, hues) {
+    const list = $('.industry-list', section);
+    const rings = [[.24, 26, 1], [.36, 34, -1], [.48, 42, 1]];  // radius (of the box), seconds, direction: the gaps
+    //                                                            between rings are wider than a chip, so passes do not overlap
+    const box = () => list.getBoundingClientRect().width;
+    rings.forEach(([r], k) => {
+      const ring = document.createElement('div');
+      ring.className = 'anel';
+      ring.setAttribute('aria-hidden', 'true');
+      ring.style.cssText = `width: ${r * 200}%; height: ${r * 200}%`;
+      list.prepend(ring);
+    });
+    items.forEach((li, i) => {
+      // Three per ring, 120° apart; each ring starts 40° further round, so chips of neighbouring rings never meet.
+      const [r, dur, turn] = rings[i % 3], a = (Math.floor(i / 3) * 120 + (i % 3) * 40) % 360;
+      li.style.setProperty('--r', r * 100 + '%');
+      li.style.setProperty('--dur', dur + 's');
+      li.style.setProperty('--a', a + 'deg');
+      li.style.setProperty('--turn', turn);
+      li.style.setProperty('--hue', hues[i]);
+      const b = buttons[i];
+      b.setAttribute('aria-label', items[i].dataset.nome || b.textContent);
+      b.style.setProperty('--dur', dur + 's');
+      b.style.setProperty('--a', a + 'deg');
+      b.style.setProperty('--turn', turn);
+      b.replaceChildren();
+      const tile = document.createElement('span');
+      tile.className = 'tile';
+      tile.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${GLYPHS[i % GLYPHS.length]}"/></svg>`;
+      const nome = document.createElement('span');
+      nome.className = 'nome';
+      nome.textContent = items[i].dataset.nome;
+      b.append(tile, nome);
+    });
+    return () => box();
+  }
+
   function industriesScene(on, stage) {
     const section = $('.industries');
     const items = $$('.industry-list li', section);
@@ -114,12 +167,20 @@
       b.type = 'button';
       b.className = 'industry-btn';
       b.textContent = li.textContent;
+      li.dataset.nome = li.textContent;
       li.replaceChildren(b);
       return b;
     });
+    const orbit = new URLSearchParams(location.search).has('orbita');
+    if (orbit) {
+      root.classList.add('orbit-on');
+      orbitScene(section, items, buttons, hues);
+    }
 
-    gsap.set(items, { color: DIM, scale: 1 });
-    gsap.set(items[0], { color: '#fff', scale: 1.06 });
+    if (!orbit) {
+      gsap.set(items, { color: DIM, scale: 1 });
+      gsap.set(items[0], { color: '#fff', scale: 1.06 });
+    }
     gsap.set(glow, { '--c': hues[0], '--x': spots[0][0] + '%', '--y': spots[0][1] + '%' });
 
     // A luminous marker under the active sector, driven by the same playhead as the text and glow,
@@ -152,9 +213,11 @@
       onUpdate: () => { mark(Math.round(gsap.utils.clamp(0, last, tl.time()))); placeMarker(); },
     });
     for (let i = 1; i <= last; i++) {
-      tl.to(items[i - 1], { color: DIM, scale: 1 }, i - 1)
-        .to(items[i], { color: '#fff', scale: 1.06 }, i - 1)
-        .to(glow, { '--c': hues[i], '--x': spots[i][0] + '%', '--y': spots[i][1] + '%' }, i - 1);
+      if (!orbit) {
+        tl.to(items[i - 1], { color: DIM, scale: 1 }, i - 1)
+          .to(items[i], { color: '#fff', scale: 1.06 }, i - 1);
+      }
+      tl.to(glow, { '--c': hues[i], '--x': spots[i][0] + '%', '--y': spots[i][1] + '%' }, i - 1);
     }
     mark(0);
     measure();
@@ -169,9 +232,11 @@
 
     return () => {
       trip?.kill();
-      items.forEach((li, i) => { li.textContent = labels[i]; li.classList.remove('is-active'); });
+      items.forEach((li, i) => { li.textContent = labels[i]; li.classList.remove('is-active'); li.removeAttribute('style'); });
       featured?.classList.add('is-featured');
       marker.remove();
+      $$('.anel', section).forEach(el => el.remove());
+      root.classList.remove('orbit-on');
     };
   }
 
@@ -576,7 +641,11 @@
       const wrap = inBox($(':scope > .wrap', sectors), sectors);
       const head = inBox($('.section-head', sectors), sectors);
       const origin = [wrap.x + wrap.w * .5, wrap.y + wrap.h * .7];  // where the list recedes to (stackScene)
-      if (narrow.matches) {
+      if (root.classList.contains('orbit-on')) {
+        // The rings turn around the glass: it stands at their centre, as wide as the innermost ring leaves it.
+        const ring = inBox($('.industry-list', sectors), sectors);
+        station = { x: ring.x + ring.w / 2, y: ring.y + ring.h / 2, size: ring.w * .28, band: [-1e5, 1e5], origin };
+      } else if (narrow.matches) {
         const top = parseFloat(getComputedStyle(root).fontSize) * 5.5;  // below the header
         station = { x: sectors.offsetWidth / 2, y: (top + head.y) / 2, size: Math.max(0, Math.min((head.y - top) * .85, sectors.offsetWidth * .4)), band: [-1e5, head.y], origin };
       } else {

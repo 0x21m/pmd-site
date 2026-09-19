@@ -407,8 +407,8 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
 .motion .industries::before { display: none; }
 .industries .section-head { max-width: 40rem; margin-bottom: 2rem; }
 .industries .section-head p { color: var(--night-muted); }
-/* Three columns: the glass (PMD at the centre of the operation) on the left, the categories in the middle, what
-   it means on the right. motion.js places the glass in the empty left column. */
+/* The glass (PMD at the centre of the operation) on the left, the categories in the middle; the right column is
+   empty, so the list stays centred under the heading. motion.js places the glass in the empty left column. */
 .integ-stage { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2rem; }
 .integ-glass { align-self: stretch; }
 .industries .wrap { position: relative; }  /* the marker is placed inside it, and recedes with the list */
@@ -431,13 +431,59 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
   position: absolute; top: 0; left: 0; z-index: 1; height: 2px; border-radius: 2px; pointer-events: none;
   background: linear-gradient(90deg, transparent, var(--mc, #2646c8) 25% 75%, transparent);
 }
-.integ-close { max-width: 22rem; justify-self: end; text-align: left; }
-.integ-close h3 { font-size: 1.5rem; }
-.integ-close p { margin-top: .9rem; color: var(--night-muted); font-size: .9rem; }
-.integ-close p + p { color: #fff; }
 .industry-count { display: none; margin-top: 1.5rem; color: var(--night-muted); font-size: .85rem; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 .industry-count span { color: #fff; }
 .motion .industry-count { display: block; }
+
+/* Orbit test (?orbita, 2026-09-19): the nine categories orbit the glass on three rings, instead of standing in a
+   list. Each category is an arm from the centre; its chip turns the other way, so the icon stays upright. The name
+   shows on the active chip. Without the flag, none of this applies. */
+@keyframes orbita { from { rotate: var(--a); } to { rotate: calc(var(--a) + var(--turn) * 360deg); } }
+@keyframes contra { from { rotate: calc(-1 * var(--a)); } to { rotate: calc(-1 * var(--a) - var(--turn) * 360deg); } }
+/* The rings take the height the section has left, and stay square: one screen per section holds. On a phone the
+   width is what runs out first, so there they are sized by it. */
+.orbit-on .industries .wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.orbit-on .integ-stage { flex: 1; min-height: 0; position: relative; }
+.orbit-on .integ-glass { display: none; }  /* the glass moves to the centre of the rings */
+.orbit-on .industry-list {
+  position: absolute; inset: 0; margin-inline: auto; display: block; width: auto; height: 100%; aspect-ratio: 1;
+  padding: 1.75rem;  /* half a chip: the outer ring's chips stay inside the box */
+}
+.orbit-on .anel {
+  position: absolute; top: 50%; left: 50%; translate: -50% -50%; border: 1px solid rgb(255 255 255 / .1); border-radius: 50%;
+}
+.orbit-on .industry-list li {
+  position: absolute; top: 50%; left: 50%; width: 0; height: var(--r); transform-origin: 50% 0;
+  animation: orbita var(--dur) linear infinite;
+  font-size: 1rem; line-height: 1.2;
+}
+.orbit-on .industry-btn {
+  position: absolute; bottom: 0; left: 50%; translate: -50% 50%;
+  display: grid; justify-items: center; gap: .35rem; padding: 0;
+  animation: contra var(--dur) linear infinite;
+}
+.orbit-on .industry-btn .tile {
+  display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 1.1rem;
+  border: 1px solid rgb(255 255 255 / .16); background: rgb(255 255 255 / .06);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: border-color .35s, background .35s, scale .35s;
+}
+.orbit-on .industry-btn svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.orbit-on .industry-btn .nome { font-size: .8rem; opacity: 0; transition: opacity .35s; }
+.orbit-on .industry-list li.is-active .tile {
+  border-color: color-mix(in srgb, var(--hue) 70%, transparent); background: color-mix(in srgb, var(--hue) 22%, transparent); scale: 1.08;
+}
+.orbit-on .industry-list li:is(.is-active, :hover, :focus-within) .nome { opacity: 1; }
+.orbit-on .industry-marker { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .orbit-on :is(.industry-list li, .industry-btn) { animation: none; }
+}
+@media (orientation: portrait), (max-width: 899px), (max-height: 539px) {
+  .orbit-on .industry-list { position: relative; inset: auto; width: min(100%, 22rem); height: auto; margin: 0 auto; padding: 1.5rem; }
+  .orbit-on .industry-btn .tile { width: max(2.75rem, 44px); height: max(2.75rem, 44px); border-radius: .9rem; }
+  .orbit-on .industry-btn svg { width: 1.25rem; height: 1.25rem; }
+  .orbit-on .industry-btn .nome { font-size: .7rem; }
+}
 
 /* 07 · Contratação e preço (the old FAQ: two columns and the native accordion, now the price list) */
 .faq-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem 4rem; align-items: start; }
@@ -632,9 +678,6 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
   .integ-glass { display: none; }
   .industry-list { grid-template-columns: 1fr 1fr; gap: .15rem .5rem; }
   .industry-list li { font-size: 1.3rem; }
-  .integ-close { justify-self: center; max-width: none; text-align: center; }
-  .integ-close h3 { font-size: 1.1rem; }
-  .integ-close p { margin-top: .5rem; font-size: .82rem; }
   .industry-count { margin-top: .75rem; }
 
   .faq-grid { gap: 1rem; }
@@ -692,7 +735,6 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
   .passos { margin-top: .9rem; }
   .footer-cols > div:not(:last-child), .footer-cta .calc-note { display: none; }
   .industries { padding-top: 12rem; }  /* the glass stands in this band, above the heading */
-  .integ-close p:first-of-type { display: none; }
   .produto-copy > .head-strong { display: none; }
 }
 /* The flowing fallback (a phone on its side, a small window): ordinary sections, rem at 16px. */
