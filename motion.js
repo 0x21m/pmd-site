@@ -7,6 +7,9 @@
   }
   window.__motionReady = true;
   gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
+  // A phone browser's bar sliding away changes the height mid-scroll; the sections keep the height they were built
+  // with (--screen-h) and must not be rebuilt under the visitor's finger.
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   // GSAP's own ticker caps at 240fps and times frames with Date.now() (1ms steps), so it drops frames
   // on 240Hz+ screens. Push its schedule out of reach and tick it once per real display frame instead.

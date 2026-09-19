@@ -9,6 +9,11 @@
   --night-muted: #9aa0ad;
   --radius: 1rem;
   --safe-x: calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
+  /* The screen, as measured by the script in index.html; these are the fallbacks for when it did not run. */
+  --screen-h: 100lvh;   /* the whole screen: how tall a section is */
+  --visible-h: 100svh;  /* what is visible right now: where the content goes */
+  --bar: calc(100lvh - 100svh);  /* what the browser's own bars cover */
+  --guard: 0px;
   font-family: "DM Sans", system-ui, sans-serif;
   color: var(--text);
   background: var(--paper);
@@ -20,11 +25,17 @@
    the screen and nothing reflows by width: a section that fits its frame fits every screen of that orientation.
    Screens too small for a legible frame (a phone on its side, a small window) fall back to the ordinary flowing
    page (--u 1px), without stacking. */
+/* Touch: a margin at the bottom the browser never claims — the home indicator where it is reported, and a floor
+   for the browsers that report nothing (Brave for iOS). The frame scales to what is left, so the composition gets
+   a little smaller instead of being cut. */
+@media (pointer: coarse) {
+  :root { --guard: max(env(safe-area-inset-bottom, 0px), 20px); }
+}
 @media (orientation: landscape) and (min-width: 900px) and (min-height: 540px) {
-  :root { --u: min((100vw - 80px) / 1200, 100svh / 810); }
+  :root { --u: min((100vw - 80px) / 1200, (var(--visible-h) - var(--guard)) / 810); }
 }
 @media (orientation: portrait) and (min-height: 540px) {
-  :root { --u: min((100vw - 32px) / 358, 100svh / 720); }
+  :root { --u: min((100vw - 32px) / 358, (var(--visible-h) - var(--guard)) / 720); }
 }
 html { font-size: calc(16 * var(--u, 1px)); scrollbar-color: rgb(39 72 200 / .55) transparent; }
 
@@ -131,10 +142,11 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
 /* Screens. With a frame, every section is exactly one screen (100lvh, so the phone's toolbar never resizes it);
    its content sits in the part that is always visible (100svh), under the header. */
 @media (orientation: landscape) and (min-width: 900px) and (min-height: 540px), (orientation: portrait) and (min-height: 540px) {
-  :is(main section, .site-footer) { height: 100vh; height: 100lvh; }
+  :is(main section, .site-footer) { height: 100vh; height: var(--screen-h); }
   .section {
     display: flex; flex-direction: column; justify-content: center;
-    padding-block: max(6rem, 92px) calc(3rem + 100lvh - 100svh);  /* the header, with its 44px touch target, fits above */
+    /* The header, with its 44px touch target, fits above; below, what the browser's bars cover plus the margin. */
+    padding-block: max(6rem, 92px) calc(3rem + var(--bar) + var(--guard));
   }
 }
 
@@ -475,7 +487,7 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
 /* 08 · Footer / CTA */
 .site-footer {
   display: flex; flex-direction: column; overflow: hidden;
-  padding-top: max(6rem, 92px); padding-bottom: env(safe-area-inset-bottom, 0px);  /* the header fits above */
+  padding-top: max(6rem, 92px); padding-bottom: calc(var(--bar) + var(--guard));  /* the header fits above */
   background: #07080b; color: #fff;
 }
 .footer-top { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3rem; }
@@ -663,7 +675,7 @@ body { text-shadow: 0 0 1px rgb(255 255 255 / .6), 0 1px 3px rgb(255 255 255 / .
 /* A phone frame holds one screen per section: what does not fit is left to the wider screens, never cut from them.
    (The flowing fallback shows everything.) */
 @media (orientation: portrait) and (min-height: 540px) {
-  .section { padding-block: max(5.5rem, 88px) calc(1.25rem + 100lvh - 100svh); }
+  .section { padding-block: max(5.5rem, 88px) calc(1.25rem + var(--bar) + var(--guard)); }
   .site-footer { padding-top: max(5.5rem, 88px); }
   .sem li { display: inline; }
   .sem li + li::before { content: " "; }

@@ -13,6 +13,32 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..600&display=swap">
   <link rel="stylesheet" href="styles.css">
   <script>
+    // The screen, measured. Browsers disagree about svh/lvh/dvh — Brave for iOS reports all three as the height of the
+    // moment and no safe areas at all — so the page cannot ask CSS how much of the screen the browser's own bars take.
+    // The tallest height seen is the screen, the current one is what is visible, and the difference is what the bars
+    // cover. Fields are skipped: an on-screen keyboard is not a bar. styles.css falls back to svh/lvh without this.
+    (() => {
+      const root = document.documentElement, seen = { w: 0, tall: 0 };
+      const measure = () => {
+        const el = document.activeElement;
+        if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+        const h = Math.round(visualViewport ? visualViewport.height : innerHeight);
+        const w = Math.round(visualViewport ? visualViewport.width : innerWidth);
+        if (w !== seen.w) {  // a new width is a new layout: the tallest starts over
+          seen.w = w;
+          seen.tall = h;
+        }
+        seen.tall = Math.max(seen.tall, h);
+        root.style.setProperty('--screen-h', seen.tall + 'px');
+        root.style.setProperty('--visible-h', h + 'px');
+        root.style.setProperty('--bar', (seen.tall - h) + 'px');
+      };
+      measure();
+      addEventListener('resize', measure);
+      addEventListener('orientationchange', () => { seen.w = 0; measure(); });
+      visualViewport?.addEventListener('resize', measure);
+    })();
+
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.documentElement.classList.add('motion');
       setTimeout(() => window.__motionReady || document.documentElement.classList.remove('motion'), 3000);
